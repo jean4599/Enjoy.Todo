@@ -1,0 +1,36 @@
+$basePadding: 5px;
+
+header{
+  color: white;
+}
+.main{
+  padding: 50px;
+  background-color: white;
+  margin: auto;
+}
+.TodoInput{
+  padding: 50px;
+}
+.TodoList{
+  padding: 50px;
+}
+.f-1{
+  flex:1;
+}
+.flex-container{
+  display: flex;
+}
+// Margin
+$baseMargin: 5px;
+@function margin($level: 1){
+  @return $baseMargin * $level;
+}
+.m-1{
+  margin: margin(1)
+}
+.m-2{
+  margin:margin(2)
+}
+.m-3{
+  margin:margin(3)
+}
