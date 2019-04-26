@@ -7,46 +7,55 @@ import Todo from './Todo'
 
 
 function TodoList({todos}){
+    let ele = []
+    todos.forEach((item, index)=>{
+        ele.push(<Todo key={item.id} id={item.id} date={item.date} title={item.title} checked={item.checked}/>)
+    })
     return(
         <div className="TodoList" >
-            {todos.map((item, index)=>(
-                <Todo key={item.id} title={item.title}/>
-            ))}
+            {ele}
         </div>
     )
 }
 class Day extends Component{
     constructor(props){
         super(props);
-        this.handleAddTodo = this.handleAddTodo.bind(this)
+        this.handleTodoAdd = this.handleTodoAdd.bind(this)
     }
     componentDidMount(){
         this.props.fetchTodo(this.props.date)
     }
-    handleAddTodo(todo){
+    handleTodoAdd(todo){
         this.props.addTodo(this.props.date, todo)
     }
     render(){
+        console.log("render ", this.props.date)
         return(
             <Card
                 title={this.props.isToday? "Today" : this.props.date}
-                className='f-1 m-1'>
+                className='f-1 m-1 todo'
+                bordered={false}
+                loading={this.props.isFetching}>
                 <TodoList todos={this.props.todos}/>
-                <TodoInput handleAddTodo={this.handleAddTodo}/>
+                <TodoInput handleTodoAdd={this.handleTodoAdd}/>
             </Card>
         )
     }
 }
 const mapStateToProps = (state, ownProps)=>{
     let thisDate = new Date()
+    console.log(state)
     thisDate.setDate(state.date.activeDate.getDate() + ownProps.dateOffset)
     let todayInfoString = thisDate.toDateString();
-    let isToday = (thisDate.toDateString() === state.date.today.toDateString())
-    let todos = state.todo.data[todayInfoString]?state.todo.data[todayInfoString].todos: []
+    let isToday = (thisDate.toDateString() === state.date.today.toDateString());
+    let todos = state.todo.todos[todayInfoString]? state.todo.todos[todayInfoString].data: [];
+    let isFetching = state.todo.todos[todayInfoString]? state.todo.todos[todayInfoString].isFetching : false;
+    console.log(todos)
     return({
         date: todayInfoString,
         isToday: isToday,
-        todos: todos
+        todos: todos,
+        isFetching: isFetching
     })
 }
 export default connect(mapStateToProps, {fetchTodo, addTodo})(Day)

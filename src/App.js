@@ -19,18 +19,16 @@ class App extends Component {
   render() {
     return (
       <Provider store={store}>
-        <div className="App">
-          <Layout>
-            <Header>My Todos</Header>
-            <Content>
-              <div className="main flex-container">
-                <Day dateOffset={-1} />
-                <Day dateOffset={0} />
-                <Day dateOffset={1} />
-              </div>
-            </Content>
-          </Layout>
-        </div>
+        <Layout className="App">
+          <Header className="header">
+            <h1>Enjoy.Todo</h1>
+          </Header>
+          <Content className="body flex-container">
+              <Day dateOffset={-1} />
+              <Day dateOffset={0} />
+              <Day dateOffset={1} />
+          </Content>
+        </Layout>
       </Provider>
     );
   }

@@ -1,37 +1,37 @@
-import { CHANGE_TODO_STATUS, ADD_TODO } from '../actions/types';
-import { REQUEST_TODO, RECEIVE_TODO } from '../actions/TodoActions';
+import { REQUEST_TODO, RECEIVE_TODO, ADD_TODO, UPDATE_TODO } from '../actions/TodoActions';
 import update from 'immutability-helper';
 
 const initialState = {
-	data:{},
-	isFetching: true
+	todos:{}
 }
 
 export default (state=initialState, action) =>{
 	switch (action.type){
 		case REQUEST_TODO:
-			return{
-				...state,
-				isFetching: true
-			}
+			return update(state, {todos: {[action.payload.date]: {$set: {isFetching: true}}}})
 		case RECEIVE_TODO:
-			console.log(state)
-			return update(state, {data: {[action.payload.date]: {$set: action.payload}}})
+			// let todos = Object.assign({},state.todos)
+			// todos[action.payload.date] = action.payload
+			// return {todos: todos}
+			return update(state, {
+				todos: {[action.payload.date]: {
+							data: {$set: action.payload.todos},
+							isFetching: {$set:false}
+							}
+						},
+				categories: {$set: action.payload.categories}
+			})
 		case ADD_TODO:
-			if(action.payload.date in state.data){
-				return Object.assign({},update(state, {data: {[action.payload.date]: {todos: { $push: [action.payload.todo]}}}}))
+			if(action.payload.date in state.todos){
+				return Object.assign({},update(state, {todos: {[action.payload.date]: {data: { $add: [[action.payload.todo.id, action.payload.todo]]}}}}))
 			}else{
-				return update(state, {data: {[action.payload.date]: {todos: {$set: [action.payload.todo]}}}})
+				return update(state, {todos: {[action.payload.date]: {data: {$set: [action.payload.todo]}}}})
 			}
-		// case CHANGE_TODO_STATUS:
-		// 	items = state.items;
-		//     items[action.payload.index] = {
-		//     	name: items[action.payload.index].name,
-		//     	done: action.payload.status
-		//     }
-		//     return{
-		//     	items: items
-		//     }
+		case UPDATE_TODO:
+			let updateObj = action.payload.updateObj;
+			console.log(updateObj)
+			console.log(state)
+			return update(state, {todos: {[action.payload.date]: {data: {[updateObj.id]:{$merge:updateObj}}}}})
 		default:
 			return state
 	}

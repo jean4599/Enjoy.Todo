@@ -1,12 +1,14 @@
-import { CHANGE_TODO_STATUS, ADD_TODO } from './types';
 import Firebase from '../components/Firebase/firebase';
+import update from 'immutability-helper';
 
 export const REQUEST_TODO = "REQUESTION_TODO";
 export const requestTodo = (date)=>{
 	console.log("action: request todo", date)
 	return{
 		type: REQUEST_TODO,
-		payload: date
+		payload: {
+			date
+		}
 	}
 }
 export const RECEIVE_TODO = "RECEIVE_TODO";
@@ -41,11 +43,11 @@ export const fetchTodo = (date) => (dispatch) => {
 						todoDocRef = queryTodoListDocSnapshot.ref
 						todoDocRef.collection(date).get().then(
 							queryTodosSnapshot => { //queryTodosSnapshot contains zero or more DocumentSnapshot
-								let todos = [];
+								let todos = new Map(); //use Map type to store todos!
 								queryTodosSnapshot.forEach((todoSnapShot)=>{ //traverse through each DocumentSnapshot
 									let todo = todoSnapShot.data()
 									todo.id = todoSnapShot.id
-									todos.push(todo)
+									todos.set(todo.id, todo)
 								})
 								dispatch(receiveTodo(date, categories, todos))
 							}
@@ -56,23 +58,26 @@ export const fetchTodo = (date) => (dispatch) => {
 		}
 	)
 }
+export const ADD_TODO = "ADD_TODO";
 export const addTodo = (date, item) => dispatch =>{
-	todoDocRef.collection(date).add(item).then(function(newDocRef){
+	let newitem = update(item, {date:{$set: date}})
+	todoDocRef.collection(date).add(newitem).then(function(newDocRef){
 		dispatch({
 			type: ADD_TODO,
 			payload: {
 				date: date,
-				todo: {
-					id: newDocRef.id,
-					title: item.title
-				}
+				todo: update(newitem, {id:{$set: newDocRef.id}})
 			}
 		})
 	})
 }
-export const changeTodoStatus = (payload) => (
+export const UPDATE_TODO = "UPDATE_TODO";
+export const todoUpdate = (date, updateObj) => (
 	{
-		type: CHANGE_TODO_STATUS,
-		payload: {index: payload.id, status:payload.status}
+		type: UPDATE_TODO,
+		payload: {
+			date: date,
+			updateObj: updateObj
+		}
 	}
 )

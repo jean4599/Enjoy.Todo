@@ -1,18 +1,43 @@
+@import './theme-wine.scss';
+
 $basePadding: 5px;
 
-header{
-  color: white;
+@mixin themable($theme-name, $theme-map){
+  @each $section, $map in $theme-map{
+    @if($section == container){
+      .body{
+        background-color: map-get($map, background);
+        padding: 50px;
+        margin: auto;
+        height: 100%;
+        width: 100%;
+      }
+    } @else if($section == header){
+      .header{
+        background-color: map-get($map, background);
+        color: map-get($map, text);
+      }
+    } @else if($section == card-head){
+        .todo .ant-card-head{
+          background-color: map-get($map, background);
+          color: map-get($map, text)
+        }
+    } @else if($section == card-body){
+        .todo .ant-card-body{
+          button{
+            background-color: map-get($map, element-background);
+            color: map-get($map, element-text);
+          }
+        }
+    }
+  } 
 }
-.main{
-  padding: 50px;
-  background-color: white;
-  margin: auto;
-}
-.TodoInput{
-  padding: 50px;
-}
-.TodoList{
-  padding: 50px;
+
+@include themable(theme-wine, $theme-wine);
+
+#root, .App{
+  height: 100%;
+  width: 100%;
 }
 .f-1{
   flex:1;

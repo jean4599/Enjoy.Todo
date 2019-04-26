@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { changeTodoStatus } from '../actions/TodoActions';
+import { todoUpdate } from '../actions/TodoActions';
 import { Checkbox } from 'antd';
 
 class Todo extends Component{
@@ -10,16 +10,16 @@ class Todo extends Component{
 	}
 	handleTodoCheckChange(e){
 		const checked = e.target.checked;
-		this.props.changeTodoStatus({id:this.props.id, status:checked})
+		this.props.todoUpdate(this.props.date, {id: this.props.id, checked: checked})
 	}
 	render(){
 		return(
 			<div>
-				<Checkbox checked={false} onChange={this.handleTodoCheckChange}></Checkbox>
+				<Checkbox checked={this.props.checked} onChange={this.handleTodoCheckChange}></Checkbox>
 				<span style={{textDecoration:false?'line-through':'none'}}>{this.props.title}</span>
 			</div>
 		)
 	}
 }
 
-export default connect(null, {changeTodoStatus})(Todo)
+export default connect(null, {todoUpdate})(Todo)
