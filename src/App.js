@@ -1,19 +1,17 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import reduxThunk from 'redux-thunk'
-import reducer from './reducers';
 import Day from './components/Day';
 import { Layout } from 'antd';
 import 'antd/dist/antd.css'
 import './App.scss';
+import store from './store';
 
 const {
   Header, Content
 } = Layout
 
 
-const store = createStore(reducer, {}, applyMiddleware(reduxThunk))
+
 
 class App extends Component {
   render() {
