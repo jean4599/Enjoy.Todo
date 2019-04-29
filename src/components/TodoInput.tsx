@@ -50,7 +50,8 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 	}
 	render(){
 		return(
-			<Form layout="inline" onSubmit={this.handleTodoInputAdd}>
+			<Form className="input-form" layout="inline"
+				onSubmit={this.handleTodoInputAdd}>
 				<Form.Item>
 				<Input type="text" value={this.state.inputValue} onChange={this.handleInputValueChange}/>
 				</Form.Item>

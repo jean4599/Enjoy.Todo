@@ -1,61 +1,39 @@
-@import './theme-wine.scss';
+@import './style/theme';
+@import './style/layout';
 
-$basePadding: 5px;
+@include themable(theme-love, $theme-love);
 
-@mixin themable($theme-name, $theme-map){
-  @each $section, $map in $theme-map{
-    @if($section == container){
-      .body{
-        background-color: map-get($map, background);
-        padding: 50px;
-        margin: auto;
-        height: 100%;
-        width: 100%;
-      }
-    } @else if($section == header){
-      .header{
-        background-color: map-get($map, background);
-        color: map-get($map, text);
-      }
-    } @else if($section == card-head){
-        .todo .ant-card-head{
-          background-color: map-get($map, background);
-          color: map-get($map, text)
-        }
-    } @else if($section == card-body){
-        .todo .ant-card-body{
-          button{
-            background-color: map-get($map, element-background);
-            color: map-get($map, element-text);
-          }
-        }
-    }
-  } 
-}
-
-@include themable(theme-wine, $theme-wine);
-
-#root, .App{
-  height: 100%;
+#root, .App {
   width: 100%;
+  height: 100%;
 }
-.f-1{
-  flex:1;
+.body{
+  @extend %flex-container;
+
+  padding: padding(5);
+  margin: auto;
 }
-.flex-container{
-  display: flex;
-}
-// Margin
-$baseMargin: 5px;
-@function margin($level: 1){
-  @return $baseMargin * $level;
-}
-.m-1{
-  margin: margin(1)
-}
-.m-2{
-  margin:margin(2)
-}
-.m-3{
-  margin:margin(3)
+.day-container{
+  flex: 1;
+  margin: margin(2);
+  .todo-container{
+    overflow-y: scroll; 
+    .todo{
+      margin-bottom: margin(2);
+      font-size: font(2);
+    }
+  }
+  .input-form{
+    // -webkit-box-sizing: border-box;
+    // -moz-box-sizing: border-box;
+    // box-sizing: border-box;
+    position: absolute;
+    bottom: 16px;
+    height: 40px;
+    width: 100%;
+    button{
+      border:none
+    }
+  }
+  
 }

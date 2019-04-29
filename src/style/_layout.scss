@@ -1,0 +1,19 @@
+$basePadding: 8px;
+$baseMargin: 5px;
+html{
+    font-size: 14px;
+}
+@function margin($level: 1){
+  @return $baseMargin * $level;
+}
+@function padding($level: 1){
+    @return $basePadding * $level;
+}
+@function font($level: 1){
+    @return 1rem + 0.1rem * ($level - 1);
+}
+%flex-container{
+    display: flex;
+    height: 100%; 
+    width: 100%;
+}

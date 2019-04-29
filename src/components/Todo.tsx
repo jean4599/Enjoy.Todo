@@ -4,6 +4,7 @@ import { Dispatch } from 'redux';
 import { todoUpdate } from '../store/actions/TodoActions';
 import { Checkbox } from 'antd';
 import * as types from '../store/types/todo';
+import { ThunkDispatch } from 'redux-thunk';
 
 interface TodoProps{
 	item: types.Todo,
@@ -26,14 +27,17 @@ class Todo extends Component<TodoProps,object>{
 	}
 	render(){
 		return(
-			<div>
-				<Checkbox checked={this.props.item.checked} onChange={this.handleTodoCheckChange}></Checkbox>
-				<span style={{textDecoration:false?'line-through':'none'}}>{this.props.item.title}</span>
+			<div className="todo">
+				<Checkbox 
+					className="complete-checkbox"
+					checked={this.props.item.checked}
+					onChange={this.handleTodoCheckChange}></Checkbox>
+				<span className="title">{this.props.item.title}</span>
 			</div>
 		)
 	}
 }
-const mapDispatchToProps = (dispatch: Dispatch<types.TodoAction>) => ({
-		todoUpdate: (date: types.Date, updateObj: types.Todo)=>dispatch(todoUpdate(date, updateObj))
+const mapDispatchToProps = (dispatch: ThunkDispatch<{}, null, types.TodoAction>) => ({
+		todoUpdate: async (date: types.Date, updateObj: types.Todo)=> await dispatch(todoUpdate(date, updateObj))
 })
 export default connect(null, mapDispatchToProps)(Todo)

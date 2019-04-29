@@ -27,7 +27,7 @@ function TodoList({todos}:TodoListProps){
         ele.push(<Todo key={item.id} item={item}/>)
     })
     return(
-        <div className="TodoList" >
+        <div className="todo-container" >
             {ele}
         </div>
     )
@@ -41,7 +41,7 @@ class Day extends Component<DayProps, object>{
         return(
             <Card
                 title={this.props.isToday? "Today" : this.props.date}
-                className='f-1 m-1 todo'
+                className='day-container'
                 bordered={false}
                 loading={this.props.isFetching}>
                 <TodoList todos={this.props.todos}/>

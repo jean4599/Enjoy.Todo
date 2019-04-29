@@ -124,12 +124,15 @@ ThunkAction<void, {}, null, Action<types.TodoAction>> =>
 	})
 }
 
-export const todoUpdate = (date: types.Date, updateObj: Todo):types.TodoAction => (
-	{
-		type: types.UPDATE_TODO,
-		payload: {
-			date: date,
-			updateObj: updateObj
-		}
-	}
-)
+export const todoUpdate = (date: types.Date, updateObj: Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
+(dispatch: ThunkDispatch<{},{},AnyAction>)=>{
+		console.log("action: update Todo, ", date, updateObj)
+		todoDocRef.collection(date).doc(updateObj.id).update(updateObj);
+		dispatch({
+			type: types.UPDATE_TODO,
+			payload: {
+				date: date,
+				updateObj: updateObj
+			}
+		})
+}

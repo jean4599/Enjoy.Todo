@@ -1,0 +1,117 @@
+
+@mixin themable($theme-name, $theme-map){
+    @each $section, $map in $theme-map{
+        @if($section == 'container'){
+            .body{
+                background-color: map-get($map, 'background');
+            }
+        } @else if($section == 'header'){
+            .header{
+                background-color: map-get($map, 'background');
+                h1{color: map-get($map, text);}
+            }
+        } @else if($section == 'card'){
+            .day-container{
+                background-color: map-get($map, 'background');
+            }
+        } @else if($section == 'card-head'){
+            .day-container .ant-card-head{
+                background-color: map-get($map, 'background');
+                color: map-get($map, text)
+            }
+        } @else if($section == 'card-body'){
+            .day-container .ant-card-body{
+                button{
+                background-color: map-get($map, element-background);
+                color: map-get($map, element-text);
+                }
+                input, .ant-checkbox-inner{
+                    border-color: map-get($map, element-background);
+                }
+            }
+      }
+    } 
+  }
+
+//   Most of the time, it’s a good idea to use quoted strings rather than unquoted strings for map keys. 
+//  This is because some values, such as color names, may look like unquoted strings but actually be other types. To avoid confusing problems down the line, just use quotes!
+  $theme-wine:(
+    "container":(
+        "background":#C3403F
+    ),
+    "header":(
+        "background":#E8E8E8,
+        "text": black
+    ),
+    "card":(
+        "background":#F9F8F8
+    ),
+    "card-head":(
+        "background": #646F99,
+        "text": #FDFCFF
+    ),
+    "card-body":(
+        "element-background": #4F3840,
+        "element-text": #FDFCFF
+    )
+);
+$theme-muji:(
+    "container":(
+        "background":#FCEBE1
+    ),
+    "header":(
+        "background":#CAADA0,
+        "text": white
+    ),
+    "card":(
+        "background":#F9F8F8
+    ),
+    "card-head":(
+        "background": #8597A6,
+        "text": white
+    ),
+    "card-body":(
+        "element-background": #ABC1FD,
+        "element-text": black
+    )
+);
+$theme-love:(
+    "container":(
+        "background":#FF8E8E
+    ),
+    "header":(
+        "background":#C6456E,
+        "text": white
+    ),
+    "card":(
+        "background":#fff5f5
+    ),
+    "card-head":(
+        "background": #F7C1BB,
+        "text": black
+    ),
+    "card-body":(
+        "element-background": #F9627D,
+        "element-text": white
+    )
+);
+$theme-fall:(
+    "container":(
+        "background":#2D2D2A
+    ),
+    "header":(
+        "background":#A33300,
+        "text": white
+    ),
+    "card":(
+        "background":#f4f4f4
+    ),
+    "card-head":(
+        "background":#004431,
+        "text": white
+    ),
+    "card-body":(
+        "element-background": #505383,
+        "element-text": white
+    )
+);

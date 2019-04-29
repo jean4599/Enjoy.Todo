@@ -21,7 +21,7 @@ class App extends Component {
           <Header className="header">
             <h1>Enjoy.Todo</h1>
           </Header>
-          <Content className="body flex-container">
+          <Content className="body">
               <Day dateOffset={-1} />
               <Day dateOffset={0} />
               <Day dateOffset={1} />
