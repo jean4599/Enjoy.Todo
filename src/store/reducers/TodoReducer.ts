@@ -1,5 +1,5 @@
 import update from 'immutability-helper';
-import {TodoState, TodoAction, Id, Todo, REQUEST_TODO, RECEIVE_TODO, ADD_TODO, UPDATE_TODO} from '../types/todo';
+import {TodoState, TodoAction, Id, Todo, REQUEST_TODO, RECEIVE_TODO, ADD_TODO, UPDATE_TODO, MOVE_TODO} from '../types/todo';
 
 const initialState:TodoState = {
 	todos: {},
@@ -67,6 +67,29 @@ export default (state=initialState, action: TodoAction) =>{
 						})
 					})
 				//https://www.reddit.com/r/typescript/comments/5pt6v2/react_immutable_updates_and_typescript/
+			}
+		case MOVE_TODO:
+			let newDate = action.payload.newDate;
+			let oldDate = action.payload.oldDate;
+			let todoId = action.payload.todoId;
+			let todo = Object.assign({}, state.todos[oldDate].data!.get(todoId)) as Todo;
+			todo.date = newDate;
+			let todosState = update(state.todos, 
+										{ [oldDate]: date=>
+											update(date, {
+												data: (data:Map<Id,Todo>) => 
+													update( data, { $remove: [todoId]})
+											})
+										})
+			return{
+				...state,
+				todos:	update(todosState, 
+								{[newDate]: date => 
+									update(date, {
+										data: (data: Map<Id,Todo>) => 
+											update( data, {$add:[[todoId, todo]]})
+											})
+								})
 			}
 		default:
 			return state

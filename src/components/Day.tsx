@@ -5,13 +5,10 @@ import { connect } from 'react-redux';
 import { Action } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { fetchTodo } from '../store/actions/TodoActions';
-import Todo from './Todo'
 import * as types from '../store/types/todo';
-import {AppState} from '../store'
-import { string } from 'prop-types';
-interface TodoListProps{
-    todos: Map<types.Id, types.Todo>
-}
+import {AppState} from '../store';
+import TodoList from './TodoList';
+
 interface DayProps{
     date: string,
     dateOffset: number,
@@ -21,30 +18,18 @@ interface DayProps{
     fetchTodo: (date: types.Date)=>void
 }
 
-function TodoList({todos}:TodoListProps){
-    let ele:object[] = []
-    todos.forEach((item, index)=>{
-        ele.push(<Todo key={item.id} item={item}/>)
-    })
-    return(
-        <div className="todo-container" >
-            {ele}
-        </div>
-    )
-}
 class Day extends Component<DayProps, object>{
     componentDidMount(){
         this.props.fetchTodo(this.props.date)
     }
     render(){
-        console.log(this.props.date, this.props)
         return(
             <Card
                 title={this.props.isToday? "Today" : this.props.date}
                 className='day-container'
                 bordered={false}
                 loading={this.props.isFetching}>
-                <TodoList todos={this.props.todos}/>
+                <TodoList date={this.props.date} todos={this.props.todos}/>
                 <TodoInput date={this.props.date}/>
             </Card>
         )

@@ -1,23 +1,23 @@
 import React, { Component, ChangeEvent } from 'react';
 import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { todoUpdate } from '../store/actions/TodoActions';
+import { updateTodo } from '../store/actions/TodoActions';
 import { Checkbox } from 'antd';
 import * as types from '../store/types/todo';
 import { ThunkDispatch } from 'redux-thunk';
 
 interface TodoProps{
 	item: types.Todo,
-	todoUpdate: (date: types.Date, updateObj:types.Todo)=>void
+	updateTodo: (date: types.Date, updateObj:types.Todo)=>void
 }
 class Todo extends Component<TodoProps,object>{
 	constructor(props:TodoProps){
 		super(props);
 		this.handleTodoCheckChange = this.handleTodoCheckChange.bind(this)
+		this.handleTodoDragStart = this.handleTodoDragStart.bind(this);
 	}
 	handleTodoCheckChange(e:any){
 		const checked = e.target.checked;
-		this.props.todoUpdate(this.props.item.date, 
+		this.props.updateTodo(this.props.item.date, 
 			{
 				id: this.props.item.id,
 				title: this.props.item.title,
@@ -25,9 +25,16 @@ class Todo extends Component<TodoProps,object>{
 				checked: checked
 			})
 	}
+	handleTodoDragStart(e:React.DragEvent){
+		console.log("drag Start"+e.target)
+		e.dataTransfer.clearData('date');
+		e.dataTransfer.setData("text/plain", this.props.item.id);
+		e.dataTransfer.setData("date", this.props.item.date);
+		e.dataTransfer.dropEffect = "move";
+	}
 	render(){
 		return(
-			<div className="todo">
+			<div id={this.props.item.id} className="todo" draggable={true} onDragStart={this.handleTodoDragStart}>
 				<Checkbox 
 					className="complete-checkbox"
 					checked={this.props.item.checked}
@@ -38,6 +45,6 @@ class Todo extends Component<TodoProps,object>{
 	}
 }
 const mapDispatchToProps = (dispatch: ThunkDispatch<{}, null, types.TodoAction>) => ({
-		todoUpdate: async (date: types.Date, updateObj: types.Todo)=> await dispatch(todoUpdate(date, updateObj))
+		updateTodo: async (date: types.Date, updateObj: types.Todo)=> await dispatch(updateTodo(date, updateObj))
 })
 export default connect(null, mapDispatchToProps)(Todo)

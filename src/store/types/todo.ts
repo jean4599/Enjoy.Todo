@@ -1,3 +1,5 @@
+import { string } from "prop-types";
+
 // Define Todo Objects
 export type Date = string;
 export type Checked = boolean;
@@ -12,7 +14,6 @@ export interface Todo{
 
 // Define Category Objects
 export type Category = string;
-export type Categories = Category[];
 
 // Define State
 export interface TodoState {
@@ -22,7 +23,7 @@ export interface TodoState {
 			isFetching?: boolean
 		}
 	},
-	categories?: Categories
+	categories?: Category[]
 }
 // Define Constants for Reducers and Actions
 export const REQUEST_TODO = "REQUESTION_TODO";
@@ -40,32 +41,44 @@ export type ADD_TODO = typeof ADD_TODO;
 export const UPDATE_TODO = "UPDATE_TODO";
 export type UPDATE_TODO = typeof UPDATE_TODO;
 
+export const MOVE_TODO = "MOVE_TODO";
+export type MOVE_TODO = typeof MOVE_TODO;
+
 // Define Action Functions
 export interface requestTodo{
 	type: REQUESTION_TODO,
-	payload: {date: string}
+	payload: {date: Date}
 }
 
 export interface receiveTodo{
 	type: RECEIVE_TODO,
 	payload:{
-		date: string,
-		categories: string[],
-		todos: Map<string, object>
+		date: Date,
+		categories: Category[],
+		todos: Map<Id, Todo>
 	}
 }
 export interface addTodo{
 	type: ADD_TODO,
 	payload:{
-		date: string,
+		date: Date,
 		todo: Todo
 	}
 }
 export interface updateTodo{
 	type:UPDATE_TODO,
 	payload:{
-		date: string,
+		date: Date,
 		updateObj: Todo
 	}
 }
-export type TodoAction = requestTodo|receiveTodo|addTodo|updateTodo
+
+export interface moveTodo{
+	type:MOVE_TODO,
+	payload:{
+		newDate: Date,
+		oldDate: Date,
+		todoId: Id
+	}
+}
+export type TodoAction = requestTodo|receiveTodo|addTodo|updateTodo|moveTodo

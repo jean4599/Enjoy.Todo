@@ -3,7 +3,6 @@ import update from 'immutability-helper';
 import { Action, Dispatch, AnyAction } from 'redux';
 import { ThunkAction, ThunkDispatch } from 'redux-thunk';
 import * as types from '../types/todo';
-import { Todo } from '../types/todo';
 
 export function requestTodo(date: string): types.TodoAction{
 	console.log("action: request todo", date)
@@ -15,7 +14,7 @@ export function requestTodo(date: string): types.TodoAction{
 	}
 }
 
-export function receiveTodo(date: string, categories: string[], todolist: Map<string, Todo>):types.TodoAction{
+export function receiveTodo(date: types.Date, categories: types.Category[], todolist: Map<types.Date, types.Todo>):types.TodoAction{
 	return{
 		type: types.RECEIVE_TODO,
 		payload: {
@@ -72,43 +71,17 @@ async function readUserDoc(date: types.Date, queryUserDocSnapshot: firebase.fire
 export const fetchTodo = (date:string): 
 ThunkAction<void, {}, null, Action<types.TodoAction>> => async (dispatch: ThunkDispatch<{}, {}, AnyAction>) => {
 	dispatch(requestTodo(date))
-	// Step 1: get TodoListRef (type: document reference) from 
-	// path: User (collection) >> default (document) >> TodoListRef (feild)
 	Firebase.collection('User').doc('default').get().then(
 		async (queryUserDocSnapshot: firebase.firestore.DocumentSnapshot)=>{
 			let queryTodoListDocSnapshot = await readUserDoc(date, queryUserDocSnapshot);
 			let todoData = await readTodoListDoc(date, queryTodoListDocSnapshot)
 			dispatch(receiveTodo(date, todoData.categories, todoData.todos))
-			// if(queryUserDocSnapshot.exists){
-			// 	todoListRef = queryUserDocSnapshot.data()!.TodoListRef
-			// 	// Step 2: get categories (type: string[]) from 
-			// 	// path: TodoList document using TodoListRef (document reference) >> Categoty (feild)
-			// 	todoListRef.get().then(
-			// 		(queryTodoListDocSnapshot:firebase.firestore.QueryDocumentSnapshot) => {
-			// 			let categories = queryTodoListDocSnapshot!.data().Category
-			// 			// Step 3: get todos (type: object[]) 
-			// 			// 3-1: get todos document from the sub-collection (someday's Todo) of TodoList (document)
-			// 			todoDocRef = queryTodoListDocSnapshot.ref
-			// 			todoDocRef.collection(date).get().then(
-			// 				(queryTodosSnapshot:firebase. firestore. QuerySnapshot) => { //queryTodosSnapshot contains zero or more DocumentSnapshot
-			// 					let todos = new Map(); //use Map type to store todos!
-			// 					queryTodosSnapshot.forEach((todoSnapShot)=>{ //traverse through each DocumentSnapshot
-			// 						let todo = todoSnapShot.data()
-			// 						todo.id = todoSnapShot.id
-			// 						todos.set(todo.id, todo)
-			// 					})
-			// 					dispatch(receiveTodo(date, categories, todos))
-			// 				}
-			// 			)
-			// 		}
-			// 	)
-			// }
 		}
 	)
 }
 
 
-export const addTodo = (date:types.Date, item:Todo):
+export const addTodo = (date:types.Date, item:types.Todo):
 ThunkAction<void, {}, null, Action<types.TodoAction>> => 
 (dispatch: ThunkDispatch<{}, {}, AnyAction>) =>{
 	console.log("action: add Todo, ", date)
@@ -124,7 +97,7 @@ ThunkAction<void, {}, null, Action<types.TodoAction>> =>
 	})
 }
 
-export const todoUpdate = (date: types.Date, updateObj: Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
+export const updateTodo = (date: types.Date, updateObj: types.Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
 (dispatch: ThunkDispatch<{},{},AnyAction>)=>{
 		console.log("action: update Todo, ", date, updateObj)
 		todoDocRef.collection(date).doc(updateObj.id).update(updateObj);
@@ -135,4 +108,17 @@ export const todoUpdate = (date: types.Date, updateObj: Todo):ThunkAction<void, 
 				updateObj: updateObj
 			}
 		})
+}
+
+export const moveTodo = (newDate: types.Date, oldDate: types.Date, todoId: types.Id):ThunkAction<void, {}, null, Action<types.TodoAction>> =>
+(dispatch: ThunkDispatch<{}, {}, AnyAction>)=>{
+	console.log(`action: move Todo ${todoId} from ${oldDate} to ${newDate}`)
+	dispatch({
+		type: types.MOVE_TODO,
+		payload:{
+			newDate: newDate,
+			oldDate: oldDate,
+			todoId: todoId
+		}
+	})
 }
