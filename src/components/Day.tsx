@@ -49,9 +49,7 @@ const mapStateToProps = (state:AppState, ownProps:DayProps)=>{
         isFetching: isFetching || false
     })
 }
-const mapDispatchToProps = (dispatch: ThunkDispatch<{}, null, Action<types.TodoAction>>) => (
-    {
+const mapDispatchToProps = (dispatch: ThunkDispatch<{}, null, Action<types.TodoAction>>) => ({
         fetchTodo: async (date:string)=> await dispatch(fetchTodo(date))
-    }
-)
+})
 export default connect(mapStateToProps, mapDispatchToProps)(Day)

@@ -9,7 +9,8 @@ export interface Todo{
     id: Id,
     date: Date,
     checked: Checked,
-    title: Title
+	title: Title,
+	category: Category
 }
 
 // Define Category Objects
@@ -78,6 +79,8 @@ export interface moveTodo{
 	payload:{
 		newDate: Date,
 		oldDate: Date,
+		newEntry: string|null,
+		oldEntry: string|null,
 		todoId: Id
 	}
 }

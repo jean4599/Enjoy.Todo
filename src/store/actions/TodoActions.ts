@@ -31,7 +31,7 @@ async function readTodoListDoc(date: types.Date, queryTodoListDocSnapshot:fireba
 	Promise<{categories: types.Category[], todos: Map<string,types.Todo>}>{
 			console.log("action: readTodoListDoc, ", date)
 			todoDocRef = queryTodoListDocSnapshot.ref
-			return await todoDocRef.collection(date).get().then(
+			return todoDocRef.collection(date).get().then(
 				(queryTodosSnapshot:firebase. firestore. QuerySnapshot) => { //queryTodosSnapshot contains zero or more DocumentSnapshot
 					let todos = new Map<types.Id, types.Todo>(); //use Map type to store todos!
 					queryTodosSnapshot.forEach((todoSnapShot)=>{ //traverse through each DocumentSnapshot
@@ -41,7 +41,8 @@ async function readTodoListDoc(date: types.Date, queryTodoListDocSnapshot:fireba
 								id: todoSnapShot.id,
 								title: todo.title,
 								date: todo.date,
-								checked: todo.checked
+								checked: todo.checked,
+								category: todo.category
 							})
 					})
 					return {
@@ -64,7 +65,7 @@ async function readUserDoc(date: types.Date, queryUserDocSnapshot: firebase.fire
 					TodoListRef = documentRef
 				});
 			}
-			return await TodoListRef.get().then((queryTodoListDocSnapshot:firebase.firestore.QueryDocumentSnapshot)=>{
+			return TodoListRef.get().then((queryTodoListDocSnapshot:firebase.firestore.QueryDocumentSnapshot)=>{
 				return queryTodoListDocSnapshot
 			})
 	}
@@ -110,14 +111,15 @@ export const updateTodo = (date: types.Date, updateObj: types.Todo):ThunkAction<
 		})
 }
 
-export const moveTodo = (newDate: types.Date, oldDate: types.Date, todoId: types.Id):ThunkAction<void, {}, null, Action<types.TodoAction>> =>
+export const moveTodo = (newDate: types.Date, oldDate: types.Date, newEntry:string|null, oldEntry:string|null, todoId: types.Id):ThunkAction<void, {}, null, Action<types.TodoAction>> =>
 (dispatch: ThunkDispatch<{}, {}, AnyAction>)=>{
-	console.log(`action: move Todo ${todoId} from ${oldDate} to ${newDate}`)
 	dispatch({
 		type: types.MOVE_TODO,
 		payload:{
 			newDate: newDate,
 			oldDate: oldDate,
+			newEntry: newEntry,
+			oldEntry: oldEntry,
 			todoId: todoId
 		}
 	})

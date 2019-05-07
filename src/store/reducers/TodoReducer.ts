@@ -71,25 +71,56 @@ export default (state=initialState, action: TodoAction) =>{
 		case MOVE_TODO:
 			let newDate = action.payload.newDate;
 			let oldDate = action.payload.oldDate;
+			let newEntry = action.payload.newEntry;
+			let oldEntry = action.payload.oldEntry;
 			let todoId = action.payload.todoId;
+
 			let todo = Object.assign({}, state.todos[oldDate].data!.get(todoId)) as Todo;
 			todo.date = newDate;
-			let todosState = update(state.todos, 
+			
+			var todosState = state.todos;
+			if(newDate !== oldDate){
+				todosState = update(todosState, 
 										{ [oldDate]: date=>
 											update(date, {
-												data: (data:Map<Id,Todo>) => 
+												data: (data) => 
 													update( data, { $remove: [todoId]})
 											})
 										})
-			return{
-				...state,
-				todos:	update(todosState, 
+				if(newEntry){
+					let todoEntries = Array.from(todosState[newDate].data!);
+					todoEntries.splice(parseInt(newEntry),0,[todoId, todo]);
+					todosState = update(todosState, 
+										{[newDate]: {
+											data:{$set: new Map(todoEntries)}
+										}}
+								)
+				}else{
+					todosState = update(todosState, 
 								{[newDate]: date => 
 									update(date, {
-										data: (data: Map<Id,Todo>) => 
+										data: (data) => 
 											update( data, {$add:[[todoId, todo]]})
 											})
 								})
+				}
+			}else if(newEntry && oldEntry && newEntry !== oldEntry){
+					let todoEntries = Array.from(todosState[newDate].data!);
+					todoEntries.splice(parseInt(newEntry), 0, [todoId, todo]);
+					if(parseInt(newEntry) < parseInt(oldEntry)){
+						todoEntries.splice(parseInt(oldEntry)+1, 1);
+					}else{
+						todoEntries.splice(parseInt(oldEntry), 1);
+					}
+					todosState = update(todosState, {
+											[newDate]:  {
+													data: {$set: new Map(todoEntries)}
+											}
+										})
+			}
+			return{
+				...state,
+				todos: todosState
 			}
 		default:
 			return state
