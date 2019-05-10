@@ -1,16 +1,16 @@
 import React, { Component, ChangeEvent } from 'react';
 import { connect } from 'react-redux';
-import { updateTodo, moveTodo } from '../store/actions/TodoActions';
+import { updateTodo, moveTodo, showTodoModal } from '../store/actions/TodoActions';
 import Checkbox from './Checkbox';
 import * as types from '../store/types/todo';
-import { ThunkDispatch } from 'redux-thunk';
 import { Tag } from 'antd';
 
 interface TodoProps{
 	item: types.Todo,
 	dataEntry: string,
-	updateTodo: (date: types.Date, updateObj:types.Todo)=>void,
-	moveTodo: (newDate: types.Date, oldDate: types.Date, newEntry: string|null, oldEntry: string|null, todoId: string)=>void
+	updateTodo: (updateObj:types.Todo)=>void,
+	moveTodo: (newDate: types.Date, oldDate: types.Date, newEntry: string|null, oldEntry: string|null, todoId: string)=>void,
+	showTodoModal: (todo: types.Todo)=>void
 }
 interface TodoState{
 	isDragOver: boolean
@@ -26,9 +26,11 @@ class Todo extends Component<TodoProps,TodoState>{
 		this.handleTodoDragEnter = this.handleTodoDragEnter.bind(this);
 		this.handleTodoDragLeave = this.handleTodoDragLeave.bind(this);
 		this.handleTodoDrop = this.handleTodoDrop.bind(this);
+		this.handleTodoClick = this.handleTodoClick.bind(this);
 	}
-	handleTodoCheckChange(e:any){
-		this.props.updateTodo(this.props.item.date, 
+	handleTodoCheckChange(e:React.MouseEvent){
+		e.preventDefault();
+		this.props.updateTodo( 
 			{
 				id: this.props.item.id,
 				title: this.props.item.title,
@@ -73,6 +75,10 @@ class Todo extends Component<TodoProps,TodoState>{
 			isDragOver: false
 		})
 	}
+	handleTodoClick(e:React.MouseEvent){
+		e.preventDefault();
+		this.props.showTodoModal(this.props.item);
+	}
 	render(){
 		return(
 			<div id={this.props.item.id} 
@@ -83,6 +89,7 @@ class Todo extends Component<TodoProps,TodoState>{
 				onDragEnter={this.handleTodoDragEnter}
 				onDragLeave={this.handleTodoDragLeave}
 				onDrop={this.handleTodoDrop}
+				onClick={this.handleTodoClick}
 				data-isdragover={this.state.isDragOver}>
 				<Checkbox 
 					checked={this.props.item.checked}
@@ -93,7 +100,5 @@ class Todo extends Component<TodoProps,TodoState>{
 		)
 	}
 }
-const mapDispatchToProps = (dispatch: ThunkDispatch<{}, null, types.TodoAction>) => ({
-		updateTodo: async (date: types.Date, updateObj: types.Todo)=> await dispatch(updateTodo(date, updateObj))
-})
-export default connect(null, {updateTodo, moveTodo})(Todo)
+
+export default connect(null, {updateTodo, moveTodo, showTodoModal})(Todo)

@@ -1,6 +1,6 @@
 import React, { Component, FocusEvent, FormEvent } from 'react';
 import { Form, Input, Button} from 'antd';
-import { Action, Dispatch } from 'redux';
+import { Action } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
 import { connect } from 'react-redux';
 import { addTodo } from '../store/actions/TodoActions';
@@ -23,6 +23,7 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 		super(props)
 		this.state = {
 			titleInput:'',
+			memoInput:'',
 			categoryInput: this.props.categories[0],
 			focus: false
 		}
@@ -47,11 +48,13 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 					title: this.state.titleInput,
 					checked: false,
 					date: this.props.date,
-					category: this.state.categoryInput
+					category: this.state.categoryInput,
+					memo: this.state.memoInput
 				}
 			)
 			this.setState({
-				titleInput:''
+				titleInput:'',
+				memoInput: ''
 			})
 		}
 	}
@@ -71,10 +74,6 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 	render(){
 		const classes = ["form-container"];
 		classes.push(this.state.focus? 'focused' : 'unfocused');
-		const formItemLayout = {
-			// labelCol: { span: 6 },
-			// wrapperCol: { span: 18 },
-		  } 
 		return(
 			<div className={classes.join(' ')}
 			onBlur={this.handleInputBlur}
@@ -86,8 +85,7 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 					labelAlign="left"
 					colon={false}
 					>
-					<Form.Item
-						{...formItemLayout}>
+					<Form.Item>
 						<Input type="text" 
 							name="titleInput"
 							value={this.state.titleInput} 
@@ -98,7 +96,7 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 					</Form.Item>
 					<Form.Item
 						label="Category"
-						{...formItemLayout}>
+						>
 						<RadioGroup
 								name="categoryInput"
 								onChange={this.handleInputValueChange}
@@ -109,6 +107,12 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 								)
 							)}
 						</RadioGroup>
+					</Form.Item>
+					<Form.Item>
+						<Input.TextArea autosize placeholder="Some memo about this todo..."
+						name="memoInput" 
+						onChange={this.handleInputValueChange}
+						value={this.state.memoInput}></Input.TextArea>
 					</Form.Item>
 					<Form.Item>
 						<Button type="primary" htmlType="submit" block>Add</Button>

@@ -42,7 +42,8 @@ async function readTodoListDoc(date: types.Date, queryTodoListDocSnapshot:fireba
 								title: todo.title,
 								date: todo.date,
 								checked: todo.checked,
-								category: todo.category
+								category: todo.category,
+								memo: todo.memo,
 							})
 					})
 					return {
@@ -98,14 +99,21 @@ ThunkAction<void, {}, null, Action<types.TodoAction>> =>
 	})
 }
 
-export const updateTodo = (date: types.Date, updateObj: types.Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
+export const deleteTodo = (todo: types.Todo) => {
+	todoDocRef.collection(todo.date).doc(todo.id).delete();
+	return({
+		type: types.DELETE_TODO,
+		payload:{ todo }
+	})
+}
+export const updateTodo = (updateObj: types.Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
 (dispatch: ThunkDispatch<{},{},AnyAction>)=>{
-		console.log("action: update Todo, ", date, updateObj)
-		todoDocRef.collection(date).doc(updateObj.id).update(updateObj);
+		console.log("action: update Todo, ", updateObj.date, updateObj)
+		todoDocRef.collection(updateObj.date).doc(updateObj.id).update(updateObj);
 		dispatch({
 			type: types.UPDATE_TODO,
 			payload: {
-				date: date,
+				date: updateObj.date,
 				updateObj: updateObj
 			}
 		})
@@ -122,5 +130,19 @@ export const moveTodo = (newDate: types.Date, oldDate: types.Date, newEntry:stri
 			oldEntry: oldEntry,
 			todoId: todoId
 		}
+	})
+}
+
+export const showTodoModal = (todo: types.Todo):types.TodoAction=>{
+	return({
+		type: types.SHOW_TODO_MODAL,
+		payload:{
+			todo: todo
+		}
+	})
+}
+export const closeTodoModal = ()=>{
+	return({
+		type: types.CLOSE_TODO_MODAL
 	})
 }

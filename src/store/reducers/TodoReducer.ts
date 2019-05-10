@@ -1,9 +1,10 @@
 import update from 'immutability-helper';
-import {TodoState, TodoAction, Id, Todo, REQUEST_TODO, RECEIVE_TODO, ADD_TODO, UPDATE_TODO, MOVE_TODO} from '../types/todo';
+import {TodoState, TodoAction, Id, Todo, REQUEST_TODO, RECEIVE_TODO, ADD_TODO, UPDATE_TODO, MOVE_TODO, SHOW_TODO_MODAL, CLOSE_TODO_MODAL, DELETE_TODO} from '../types/todo';
 
 const initialState:TodoState = {
 	todos: {},
-	categories: []
+	categories: [],
+	todoModalVisible: false,
 }
 
 export default (state=initialState, action: TodoAction) =>{
@@ -43,19 +44,20 @@ export default (state=initialState, action: TodoAction) =>{
 							})
 						})
 			}
-			// if(action.payload.date in state.todos){
-			// 	return {
-			// 		...state,
-			// 		todos: update(state.todos, {[action.payload.date]: {data: { $add: [[action.payload.todo.id, action.payload.todo]]}}})
-			// 	}
-			// }else{
-			// 	return {
-			// 		...state,
-			// 		todos: update(state.todos, {$merge:{[action.payload.date]: {data: [action.payload.todo]}}})
-			// 	}
-			// }
+		case DELETE_TODO:
+			return{
+				...state,
+				todos: update(state.todos,{
+					[action.payload.todo.date]: date =>
+						update(date,{
+							data: {$remove:[action.payload.todo.id]}
+						})
+				})
+			}
 		case UPDATE_TODO:
 			let updateObj = action.payload.updateObj;
+			let selectedTodo = (state.selectedTodo && state.selectedTodo.id===updateObj.id)?
+				updateObj : state.selectedTodo
 			return {
 				...state,
 				todos: update(state.todos, {
@@ -65,7 +67,8 @@ export default (state=initialState, action: TodoAction) =>{
 								$add:[[updateObj.id, updateObj]]
 							})
 						})
-					})
+					}),
+				selectedTodo: selectedTodo
 				//https://www.reddit.com/r/typescript/comments/5pt6v2/react_immutable_updates_and_typescript/
 			}
 		case MOVE_TODO:
@@ -121,6 +124,17 @@ export default (state=initialState, action: TodoAction) =>{
 			return{
 				...state,
 				todos: todosState
+			}
+		case SHOW_TODO_MODAL:
+			return{
+				...state,
+				selectedTodo: action.payload.todo,
+				todoModalVisible: true,
+			}
+		case CLOSE_TODO_MODAL:
+			return{
+				...state,
+				todoModalVisible: false,
 			}
 		default:
 			return state

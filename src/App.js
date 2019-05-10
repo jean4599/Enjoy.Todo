@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import Day from './components/Day';
+import TodoModal from './components/TodoModal';
 import { Layout } from 'antd';
 import 'antd/dist/antd.css'
 import './App.scss';
@@ -25,6 +26,7 @@ class App extends Component {
               <Day dateOffset={-1} />
               <Day dateOffset={0} />
               <Day dateOffset={1} />
+              <TodoModal />
           </Content>
         </Layout>
       </Provider>

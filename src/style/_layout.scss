@@ -10,7 +10,7 @@ html{
     @return $basePadding * $level;
 }
 @function font($level: 1){
-    @return 1rem + 0.1rem * ($level - 1);
+    @return 1rem + 0.2rem * ($level - 1);
 }
 %flex-container{
     display: flex;
