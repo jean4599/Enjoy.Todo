@@ -77,7 +77,9 @@ class Todo extends Component<TodoProps,TodoState>{
 	}
 	handleTodoClick(e:React.MouseEvent){
 		e.preventDefault();
-		this.props.showTodoModal(this.props.item);
+		if((e.target as HTMLElement).className==="todo"){
+			this.props.showTodoModal(this.props.item);
+		}
 	}
 	render(){
 		return(

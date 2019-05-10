@@ -108,7 +108,6 @@ export const deleteTodo = (todo: types.Todo) => {
 }
 export const updateTodo = (updateObj: types.Todo):ThunkAction<void, {}, null, Action<types.TodoAction>> => 
 (dispatch: ThunkDispatch<{},{},AnyAction>)=>{
-		console.log("action: update Todo, ", updateObj.date, updateObj)
 		todoDocRef.collection(updateObj.date).doc(updateObj.id).update(updateObj);
 		dispatch({
 			type: types.UPDATE_TODO,

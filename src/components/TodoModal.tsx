@@ -4,26 +4,56 @@ import * as types from '../store/types/todo';
 import { AppState } from '../store';
 import { connect } from 'react-redux';
 import { updateTodo, closeTodoModal, deleteTodo } from '../store/actions/TodoActions';
+import { TitleInput, CategoryInput, MemoInput } from './TodoInput';
 import Checkbox from './Checkbox';
 interface TodoModalProps{
     todo?: types.Todo,
     visible: boolean,
+    categories?: types.Category[],
     updateTodo: (todo: types.Todo) => void,
     closeTodoModal: ()=>void,
     deleteTodo: (todo: types.Todo) => void,
 }
 interface TodoModalState{
-    visible: boolean
+    mode: string, //'view' or 'edit',
+    [propName: string]: any;
 }
 class TodoModal extends Component<TodoModalProps, TodoModalState>{
     constructor(props: TodoModalProps){
         super(props);
+        this.state = { 
+            mode: 'view',
+            titleInput: '',
+            categoryInput: '',
+            memoInput: '',
+         }
         this.handleCancel = this.handleCancel.bind(this);
+        this.handleInputValueChange = this.handleInputValueChange.bind(this);
         this.handleTodoCheckChange = this.handleTodoCheckChange.bind(this);
         this.handleDelete = this.handleDelete.bind(this);
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleSave = this.handleSave.bind(this);
     }
     handleCancel(){
         this.props.closeTodoModal();
+        this.setState({mode:'view'});
+    }
+    handleEdit(){
+        this.setState({mode:'edit'});
+    }
+    handleSave(){
+        this.props.updateTodo({
+            id: this.props.todo!.id,
+            title: this.state.titleInput,
+            category: this.state.categoryInput,
+            memo: this.state.memoInput,
+            date: this.props.todo!.date,
+            checked: this.props.todo!.checked,
+        })
+        this.setState({mode: 'view'});
+    }
+    handleInputValueChange(e:any){
+        this.setState({[e.target.name]: e.target.value})
     }
     handleTodoCheckChange(e:React.MouseEvent){
         e.preventDefault();
@@ -44,7 +74,6 @@ class TodoModal extends Component<TodoModalProps, TodoModalState>{
     }
     render(){
         let todo = this.props.todo;
-        console.log("render")
         return(
             <div>
             {(todo)?
@@ -54,19 +83,34 @@ class TodoModal extends Component<TodoModalProps, TodoModalState>{
                     onCancel={this.handleCancel}
                     footer={[
                         <Button key="delete" type="danger" onClick={this.handleDelete}>Delete</Button>,
-                        <Button key="back" onClick={this.handleCancel}>Close</Button>,
+                        (this.state.mode=='view')?
+                            <Button key="edit" onClick={this.handleEdit}>Edit</Button>:
+                            <Button key="save" onClick={this.handleSave}>Save</Button>,
                     ]}
                     title={
-                    <div className="row">
-                        <Checkbox checked={todo.checked} onClick={this.handleTodoCheckChange}/>
-                        <span className="title">{todo.title}</span>
-                    </div>}
+                        (this.state.mode=='view')?
+                            <div className="row">
+                                <Checkbox checked={todo.checked} onClick={this.handleTodoCheckChange}/>
+                                <span className="title">{todo.title}</span>
+                            </div>:
+                            <TitleInput defaultValue={this.props.todo!.title} onChange={this.handleInputValueChange}/>
+                    }
                 >
                     <div className="row">
-                        <span>Category: <Tag className="category-tag">{todo.category}</Tag></span>
+                        {(this.state.mode=='view')?
+                            <span>Category: <Tag className="category-tag">{todo.category}</Tag></span>:
+                            <CategoryInput defaultValue={this.props.todo!.category} 
+                                onChange={this.handleInputValueChange}
+                                categories={this.props.categories} />
+                        }
                     </div>
                     <div className="row">
-                        <span>{todo.memo}</span>
+                        {(this.state.mode=='view')?
+                            <span>{todo.memo}</span>:
+                            <MemoInput
+                                onChange={this.handleInputValueChange} 
+                                defaultValue={this.props.todo!.memo}/>
+                        }
                     </div>
                 </Modal>
                 : null
@@ -77,6 +121,7 @@ class TodoModal extends Component<TodoModalProps, TodoModalState>{
 }
 const mapStateToProps = (state:AppState, props:TodoModalProps) =>({
     todo: state.todo.selectedTodo,
-    visible: state.todo.todoModalVisible
+    visible: state.todo.todoModalVisible,
+    categories: state.todo.categories
 })
 export default connect(mapStateToProps, {updateTodo, closeTodoModal, deleteTodo})(TodoModal);

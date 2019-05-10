@@ -18,6 +18,34 @@ interface TodoInputStates{
 	focus: boolean;
 	[propName: string]: any;
 }
+export function TitleInput(props:any){
+	return(
+		<Input type="text" 
+			name="titleInput"
+			placeholder="Add a todo..."
+			autoComplete="off"
+			{...props}
+			/>
+	)
+}
+export function CategoryInput(props:any){
+	return(
+		<RadioGroup name="categoryInput" {...props}>
+			{props.categories.map(
+				(c: string, idx: string)=>(
+					<RadioButton key={idx} value={c}>{c}</RadioButton>
+				)
+			)}
+		</RadioGroup>
+	)
+}
+export function MemoInput(props:any){
+	return(
+		<Input.TextArea autosize 
+			placeholder="Some memo about this todo..."
+			name="memoInput" {...props}></Input.TextArea>
+	)
+}
 class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 	constructor(props:TodoInputProps){
 		super(props)
@@ -54,7 +82,8 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 			)
 			this.setState({
 				titleInput:'',
-				memoInput: ''
+				memoInput: '',
+				focus: false
 			})
 		}
 	}
@@ -86,33 +115,20 @@ class TodoInput extends Component<TodoInputProps, TodoInputStates>{
 					colon={false}
 					>
 					<Form.Item>
-						<Input type="text" 
-							name="titleInput"
-							value={this.state.titleInput} 
-							onChange={this.handleInputValueChange} 
-							placeholder="Add a todo..."
-							autoComplete="off"
-							/>
+						<TitleInput value={this.state.titleInput} 
+							onChange={this.handleInputValueChange} />
 					</Form.Item>
-					<Form.Item
-						label="Category"
-						>
-						<RadioGroup
-								name="categoryInput"
-								onChange={this.handleInputValueChange}
-								value={this.state.categoryInput}>
-							{this.props.categories.map(
-								(c, idx)=>(
-									<RadioButton key={idx} value={c}>{c}</RadioButton>
-								)
-							)}
-						</RadioGroup>
+					<Form.Item label="Category">
+						<CategoryInput 
+							onChange={this.handleInputValueChange}
+							value={this.state.categoryInput}
+							categories={this.props.categories}>
+						</CategoryInput>
 					</Form.Item>
 					<Form.Item>
-						<Input.TextArea autosize placeholder="Some memo about this todo..."
-						name="memoInput" 
-						onChange={this.handleInputValueChange}
-						value={this.state.memoInput}></Input.TextArea>
+						<MemoInput 
+							onChange={this.handleInputValueChange}
+							value={this.state.memoInput} />
 					</Form.Item>
 					<Form.Item>
 						<Button type="primary" htmlType="submit" block>Add</Button>
